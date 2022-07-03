@@ -93,8 +93,7 @@ def DownloadPage():
                 download_successful = False
                 print(e)
                 continue
-        else:
-            return render_template("error.html",error = "Download Failed",description = "Something Unexpected happened! Try again.")
+        return render_template("error.html",error = "Download Failed",description = "Something Unexpected happened! Try again.")
 
     return redirect(url_for("home"))
 
