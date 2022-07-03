@@ -27,18 +27,19 @@ class Download():
         return
 
     def download(self):
+        
+        for _ in range(100):
+            for _ in range(512):
+                try:
+                    self.buffer = BytesIO()
+                    self.yt_link.stream_to_buffer(self.buffer)
+                    self.buffer.seek(0)
+                    self.downloaded = True
+                    return
 
-        while True:
-            try:
-                self.buffer = BytesIO()
-                self.yt_link.stream_to_buffer(self.buffer)
-                self.buffer.seek(0)
-                self.downloaded = True
-                return
-
-            except Exception as e:
-                self.downloaded = False
+                except Exception as e:
+                    self.downloaded = False
                 
-        self.downloaded = False
+            self.downloaded = False
         return
 
