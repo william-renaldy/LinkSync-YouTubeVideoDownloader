@@ -28,7 +28,7 @@ class Download():
 
     def download(self):
 
-        for _ in range(512):
+        while True:
             try:
                 self.buffer = BytesIO()
                 self.yt_link.stream_to_buffer(self.buffer)
