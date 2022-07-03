@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, request, url_for,send_file
 from downloader import Download as YouTube
 
 app = Flask(__name__)
-
+link = Youtube(__name__)
 
 @app.route("/")
 def home():
