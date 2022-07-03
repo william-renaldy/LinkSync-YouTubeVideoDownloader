@@ -2,10 +2,12 @@ from flask import Flask, render_template, redirect, request, url_for,send_file
 from downloader import Download as YouTube
 
 app = Flask(__name__)
-link = YouTube(__name__)
+
 
 @app.route("/")
 def home():
+    global link
+    link = YouTube(__name__)
     return render_template("homepage.html")
 
 
