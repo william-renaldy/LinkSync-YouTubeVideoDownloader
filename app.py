@@ -80,17 +80,20 @@ def DownloadPage():
     if request.method == "POST":
         global link,buffer,download_successful
 
-        try:
-            buffer = BytesIO()
-            print(link)
-            link.stream_to_buffer(buffer)
-            buffer.seek(0)
-            download_successful = True
-            return "Success"
+        for _ in range(10):
+            try:
+                buffer = BytesIO()
+                print(link)
+                link.stream_to_buffer(buffer)
+                buffer.seek(0)
+                download_successful = True
+                return "Success"
 
-        except Exception as e:
-            download_successful = False
-            print(e)
+            except Exception as e:
+                download_successful = False
+                print(e)
+                continue
+        else:
             return render_template("error.html",error = "Download Failed",description = "Something Unexpected happened! Try again.")
 
     return redirect(url_for("home"))
@@ -104,4 +107,4 @@ def page_not_found(e):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
