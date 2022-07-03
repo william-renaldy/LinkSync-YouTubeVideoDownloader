@@ -80,7 +80,7 @@ def DownloadPage():
     if request.method == "POST":
         global link,buffer,download_successful
 
-        for _ in range(10):
+        for _ in range(25):
             try:
                 buffer = BytesIO()
                 print(link)
