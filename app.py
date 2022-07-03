@@ -64,7 +64,6 @@ def sender():
     if link.downloaded == True:
     
         buffer,name = link.buffer,link.name
-        del link
         link = YouTube(__name__)
 
         return send_file(buffer,as_attachment=True,download_name=f"{name}.mp4",mimetype="video/mp4")
@@ -86,4 +85,4 @@ def page_not_found(e):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
