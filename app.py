@@ -59,10 +59,17 @@ def downloader():
 
 @app.route("/downloaded",methods = ["GET"])
 def downloaded():
+    global download_successful,loaded
     if download_successful == True:
         try:
             global buffer,link
-            return send_file(buffer,as_attachment=True,download_name=f"{link.title}.mp4",mimetype="video/mp4")
+            link1 = link
+            buffer1 = buffer
+            buffer = None
+            link = None
+            download_successful = None
+            loaded = None
+            return send_file(buffer1,as_attachment=True,download_name=f"{link1.title}.mp4",mimetype="video/mp4")
         except Exception as e:
             print(e)
             return render_template("error.html",error = "Download Failed",description = "Something Unexpected happened! Try again.")
@@ -72,6 +79,8 @@ def downloaded():
 
     elif download_successful == None:
         return redirect(url_for("home"))
+
+
 
 
 
