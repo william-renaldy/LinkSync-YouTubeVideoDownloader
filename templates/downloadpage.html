@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel = "icon" href ="{{url_for('static',filename='logo.png')}}" type = "image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static',filename='style.css')}}">
+    <title>LinkSync - YouTube Video Downloader</title>
+</head>
+<body>
+    <div class="container">
+        <div class="cover" style="text-align:center ;">
+            <form>
+                <div class="flex-form" style="background:transparent ;">
+                    <iframe class="youtubeframe" style="background:transparent ;" src="https://youtube.com/embed/{{code}}"></iframe>
+                </div>
+                <br><p id="code" hidden>{{code}}</p>
+                <button class="btn" id="downloadbutton"><i class="fa fa-download"></i>Download</button>
+            </form>
+            <div class="classic-3" id="loading">Downloading ...</div>
+            <div class="completed" id="completed">Download Started!!</div>
+        </div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function()
+        {
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("completed").style.display = "none";
+
+            $("#downloadbutton").click(function()
+            {
+                document.getElementById("downloadbutton").style.display = "none";
+                document.getElementById("loading").style.display = "block";
+                $.ajax(
+                    {
+                        data:{
+                            url: $("#code").val(),
+                        },
+                        type: "POST",
+                        url: "/downloadfunction",
+                        success: function(response){
+                            document.getElementById("completed").style.display = "block";
+                            document.getElementById("loading").style.display = "none";
+                            window.location.href = "/downloaded";
+                        }
+                    });
+                    event.preventDefault();
+            });
+            
+        });
+    </script>
+    
+</body>
+</html>
