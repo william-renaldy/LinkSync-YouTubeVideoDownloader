@@ -38,5 +38,7 @@ class Download():
 
             except Exception as e:
                 self.downloaded = False
+                
+        self.downloaded = False
         return
 
