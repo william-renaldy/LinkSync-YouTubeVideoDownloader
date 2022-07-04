@@ -1,90 +1,118 @@
-from flask import Flask, render_template, redirect, request, url_for,send_file
-from downloader import Download as YouTube
+from io import BytesIO
+from flask import Flask, redirect, render_template, send_file, url_for, request, session
+from pytube import YouTube
+import os
 
 app = Flask(__name__)
-link = YouTube(__name__)
+app.secret_key = os.urandom(24)
 
 @app.route("/")
 def home():
-    global link
-    link = YouTube(__name__)
     return render_template("homepage.html")
 
 
-
-
-@app.route("/loader",methods = ["GET","POST"])
+@app.route("/loader",methods = ["POST","GET"])
 def loader():
-    global link
+    global url
 
     if request.method == "POST":
         url = request.form["url"]
-        link = YouTube(url)
         
-        link.load()
+        try:
+            YouTube(url)
+        except:
+            return render_template("error.html",error = "Link Not Found",description = "Enter a valid link or check your Internet Connection")
 
-        return "Loaded"
+        session[url] = url
 
-    return redirect(url_for("home"))
+        return "loaded"
 
-
-
-
-@app.route("/download", methods = ["GET"])
-def downloadPage():
-    global link
-
-    if link.loaded == True:
-        return render_template("downloadpage.html",code = link.url_code)
-
-    elif link.loaded == False:
-        return render_template("error.html",error = "Link Not Found",description = "Enter a valid link or check your Internet Connection")
-
-    elif link.loaded == None:
+    if request.method == "GET":
         return redirect(url_for("home"))
+
+
+
+
+@app.route("/download",methods = ["GET"])
+def downloadPage():
+
+
+    try:
+        print(url)
+        print(session)
+
+        if url in session:
+            link = session[url]
+            return render_template("downloadpage.html",code = link.split("/")[-1])
+
+        else:
+            return redirect(url_for("home"))
+
+    except NameError:
+        return redirect(url_for("home"))
+
 
 
 
 
 @app.route("/downloadfunction",methods = ["GET","POST"])
 def downloader():
-    global link
+    global buffer
     
     if request.method == "POST":
-        link.download()
+        
+        if url in session:
+            link = session[url]
 
-        return "Downloaded"
+            for _ in range(512):
+                try:
+                    link = YouTube(link).streams.filter(progressive=True,file_extension="mp4").get_highest_resolution()
+                    buffer = BytesIO()
 
-    return redirect(url_for("home"))
+                    link.stream_to_buffer(buffer)
+                    buffer.seek(0)
+                    break
+                
+                except:
+                    continue
 
+            else:
+                return render_template("error.html",error = "Download Failed",description = "Something Unexpected happened! Try again.")
 
+            return "Downloaded"
 
-@app.route("/downloaded",methods = ["GET"])
-def sender():
-    global link
+        else:
+            return redirect(url_for("home"))
 
-    if link.downloaded == True:
-    
-        buffer,name = link.buffer,link.name
-        link = YouTube(__name__)
-
-        return send_file(buffer,as_attachment=True,download_name=f"{name}.mp4",mimetype="video/mp4")
-
-
-    elif link.downloaded == False:
-        return render_template("error.html",error = "Download Failed",description = "Something Unexpected happened! Try again.")
-
-    elif link.downloaded == None:
+    else:
         return redirect(url_for("home"))
 
 
 
 
-@app.errorhandler(404)
-def page_not_found(e):
-    return render_template('error.html',error = "Error - 404",description = "Page Not Found")
+@app.route("/downloaded",methods = ["GET"])
+def sender():
+
+
+    try:
+        if url in session:
+
+            link = session[url]
+            name = YouTube(link)
+
+            session.pop(url,None)
+
+            return send_file(buffer,as_attachment=True,download_name=f"{name.title}.mp4",mimetype="video/mp4")
+
+        else:
+            return redirect(url_for("home"))
+
+    except NameError:
+        return redirect(url_for("home"))
+
+
 
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
