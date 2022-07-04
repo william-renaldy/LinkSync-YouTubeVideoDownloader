@@ -61,27 +61,31 @@ def downloader():
     
     if request.method == "POST":
         
-        if url in session:
-            link = session[url]
+        try:
+            if url in session:
+                link = session[url]
 
-            for _ in range(512):
-                try:
-                    link = YouTube(link).streams.filter(progressive=True,file_extension="mp4").get_highest_resolution()
-                    buffer = BytesIO()
+                for _ in range(512):
+                    try:
+                        link = YouTube(link).streams.filter(progressive=True,file_extension="mp4").get_highest_resolution()
+                        buffer = BytesIO()
 
-                    link.stream_to_buffer(buffer)
-                    buffer.seek(0)
-                    break
-                
-                except:
-                    continue
+                        link.stream_to_buffer(buffer)
+                        buffer.seek(0)
+                        break
+                    
+                    except:
+                        continue
+
+                else:
+                    return render_template("error.html",error = "Download Failed",description = "Something Unexpected happened! Try again.")
+
+                return "Downloaded"
 
             else:
-                return render_template("error.html",error = "Download Failed",description = "Something Unexpected happened! Try again.")
+                return redirect(url_for("home"))
 
-            return "Downloaded"
-
-        else:
+        except NameError:
             return redirect(url_for("home"))
 
     else:
@@ -115,4 +119,4 @@ def sender():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
