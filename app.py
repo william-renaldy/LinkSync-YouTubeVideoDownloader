@@ -36,6 +36,7 @@ def loader():
 @app.route("/download",methods = ["GET"])
 def downloadPage():
 
+    global url
 
     try:
         print(url)
@@ -57,7 +58,7 @@ def downloadPage():
 
 @app.route("/downloadfunction",methods = ["GET","POST"])
 def downloader():
-    global buffer
+    global buffer,url
     
     if request.method == "POST":
         
@@ -96,7 +97,7 @@ def downloader():
 
 @app.route("/downloaded",methods = ["GET"])
 def sender():
-
+    global buffer,url
 
     try:
         if url in session:
