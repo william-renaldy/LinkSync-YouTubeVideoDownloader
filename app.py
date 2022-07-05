@@ -107,6 +107,7 @@ def sender():
     global buffer,url,a
 
     try:
+        print(session)
         if url in session:
 
             if a == True:
@@ -125,6 +126,7 @@ def sender():
             return redirect(url_for("home"))
 
     except NameError:
+        print("NameError")
         return redirect(url_for("home"))
 
 
