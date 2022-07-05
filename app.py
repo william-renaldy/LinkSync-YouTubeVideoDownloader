@@ -64,7 +64,7 @@ def downloadPage():
 
 @app.route("/downloadfunction",methods = ["GET","POST"])
 def downloader():
-    global buffer,url
+    global buffer,url,a
     
     if request.method == "POST":
         
@@ -79,6 +79,7 @@ def downloader():
 
                         link.stream_to_buffer(buffer)
                         buffer.seek(0)
+                        a = True
                         break
                     
                     except:
@@ -103,18 +104,22 @@ def downloader():
 
 @app.route("/downloaded",methods = ["GET"])
 def sender():
-    global buffer,url
+    global buffer,url,a
 
     try:
         if url in session:
 
-            link = session[url]
-            name = YouTube(link)
+            if a == True:
+                link = session[url]
+                name = YouTube(link)
 
-            session.pop(url,None)
-            print(session)
+                session.pop(url,None)
+                a = False
 
-            return send_file(buffer,as_attachment=True,download_name=f"{name.title}.mp4",mimetype="video/mp4")
+                return send_file(buffer,as_attachment=True,download_name=f"{name.title}.mp4",mimetype="video/mp4")
+
+            else:
+                return render_template("error.html",error = "Download Failed",description = "Something Unexpected happened! Try again.")
 
         else:
             return redirect(url_for("home"))
