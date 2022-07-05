@@ -42,6 +42,12 @@ def downloadPage():
         print(url)
         print(session)
 
+        try:
+            YouTube(url).check_availability()
+        except:
+            return render_template("error.html",error = "Link Not Found",description = "Enter a valid link or check your Internet Connection")
+
+
         if url in session:
             link = session[url]
             return render_template("downloadpage.html",code = link.split("/")[-1])
@@ -106,6 +112,7 @@ def sender():
             name = YouTube(link)
 
             session.pop(url,None)
+            print(session)
 
             return send_file(buffer,as_attachment=True,download_name=f"{name.title}.mp4",mimetype="video/mp4")
 
