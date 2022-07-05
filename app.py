@@ -83,6 +83,7 @@ def downloader():
                         break
                     
                     except:
+                        a = False
                         continue
 
                 else:
